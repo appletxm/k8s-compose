@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  web-app:
+    platform: linux/amd64
+    container_name: web-app
+    build:
+      context: ./../k8s-web-app/
+      dockerfile: dockerfile.dev
+    # env_file:
+    #   - ../k8s-web-server/.dev.env
+    # environment:
+    #   - MY_TEST=99999
+    volumes:
+      # - /Users/appletxm/Desktop/me/test/koa2-test/src:/app/src
+      - ../k8s-web-app:/web-app
+      - /web-app/node_modules/
+    ports:
+      - 3001:3001
+    networks:
+      - k8s-sample-network
+    depends_on:
+      - web-server
+
+  web-server:
+    platform: linux/amd64
+    container_name: web-server
+    build:
+      context: ./../k8s-web-server/
+      dockerfile: dockerfile.dev
+    env_file:
+      - ../k8s-web-server/.env
+    environment:
+      - MY_TEST=99999
+      - CLIENT_PORT=1991
+      - SERVER_PORT=8085
+    volumes:
+      # - ../k8s-web-server/src:/web-server/src
+      # - /Users/appletxm/Desktop/me/test/k8s/k8s-web-server/src:/web-server/src
+      - ../k8s-web-server:/web-server
+      - /web-server/node_modules/
+    ports:
+      - 8085:8085
+      - 3321:3321
+    networks:
+      - k8s-sample-network
+    # depends_on:
+    #   - web-db
+
+  # web-db:
+  #   image: mongo:latest
+  #   container_name: mongo-dev
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=123456
+  #   volumes:
+  #     - ./mongodata:/data/db
+  #   ports:
+  #     - 27017:27017
+  #   networks:
+  #     - k8s-sample-network
+  
+networks:
+  k8s-sample-network:
+    driver: bridge
