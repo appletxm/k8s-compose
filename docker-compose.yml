@@ -1,27 +1,6 @@
 version: '3.8'
 
 services:
-  web-app:
-    platform: linux/amd64
-    container_name: web-app
-    build:
-      context: ./../k8s-web-app/
-      dockerfile: dockerfile.dev
-    # env_file:
-    #   - ../k8s-web-server/.dev.env
-    # environment:
-    #   - MY_TEST=99999
-    volumes:
-      # - /Users/appletxm/Desktop/me/test/koa2-test/src:/app/src
-      - ../k8s-web-app:/web-app
-      - /web-app/node_modules/
-    ports:
-      - 3001:3001
-    networks:
-      - k8s-sample-network
-    depends_on:
-      - web-server
-
   web-server:
     platform: linux/amd64
     container_name: web-server
@@ -46,6 +25,27 @@ services:
       - k8s-sample-network
     # depends_on:
     #   - web-db
+
+  web-app:
+    platform: linux/amd64
+    container_name: web-app
+    build:
+      context: ./../k8s-web-app/
+      dockerfile: dockerfile.dev
+    # env_file:
+    #   - ../k8s-web-server/.dev.env
+    # environment:
+    #   - MY_TEST=99999
+    volumes:
+      # - /Users/appletxm/Desktop/me/test/koa2-test/src:/app/src
+      - ../k8s-web-app:/web-app
+      - /web-app/node_modules/
+    ports:
+      - 3001:3001
+    networks:
+      - k8s-sample-network
+    depends_on:
+      - web-server
 
   # web-db:
   #   image: mongo:latest
