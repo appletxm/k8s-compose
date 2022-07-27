@@ -23,8 +23,8 @@ services:
       - 3321:3321
     networks:
       - k8s-sample-network
-    # depends_on:
-    #   - web-db
+    depends_on:
+      - web-db
 
   web-app:
     platform: linux/amd64
@@ -47,16 +47,31 @@ services:
     depends_on:
       - web-server
 
-  # web-db:
-  #   image: mongo:latest
-  #   container_name: mongo-dev
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=123456
-  #   volumes:
-  #     - ./mongodata:/data/db
+  web-db:
+    image: mongo:latest
+    container_name: mongo-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+    volumes:
+      - ./mongodata:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - k8s-sample-network
+
+  # web-cache:
+  #   # image: "arm64v8/redis"
+  #   image: "redis:alpine"
+  #   container_name: aaride-services-redis
+  #   command: ["redis-server"]
   #   ports:
-  #     - 27017:27017
+  #     - "6380:6379"
+  #   volumes:
+  #     - $PWD/redis-data:/var/lib/redis
+  #     - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+  #   environment:
+  #     - REDIS_REPLICATION_MODE=master
   #   networks:
   #     - k8s-sample-network
   
